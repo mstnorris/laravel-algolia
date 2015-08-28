@@ -19,3 +19,7 @@ $results = $search->index('test_drive_contacts')
 
 return view('results', compact('results'));
 });
+
+Route::get('jsonly', function() {
+    return view('jsonly');
+});
