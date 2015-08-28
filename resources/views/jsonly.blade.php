@@ -4,16 +4,27 @@
     <meta charset="UTF-8">
     <title>Algolia</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+        em {
+            background: #eceff1;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-            <div class="results">
-                <article v-repeat="user: users">
-                    <h2>@{{ user.name }}</h2>
-                    <h4>@{{ user.company }}</h4>
-                </article>
+            <div class="row">
+                <label for="query"></label>
+                <input type="text" id="query" name="query" v-model="query" v-on="keyup: search | key 'enter'" class="form-control">
+            </div>
+            <div class="row">
+                <div class="results">
+                    <article v-repeat="user: users">
+                        <h2 v-html="user._highlightResult.name.value"></h2>
+                        <h4 v-html="user._highlightResult.company.value"></h4>
+                    </article>
+                </div>
             </div>
         </div>
     </div>
@@ -26,15 +37,22 @@
     new Vue({
         el: 'body',
 
-        data: { users: [] },
+        data: {
+            query: '',
+            users: []
+        },
 
         ready: function() {
-            var client = algoliasearch("02T94JSIW0", "d866daeab49969b88ab26e562503ac08");
-            var index = client.initIndex('test_drive_contacts');
+            this.client = algoliasearch("02T94JSIW0", "d866daeab49969b88ab26e562503ac08");
+            this.index = this.client.initIndex('test_drive_contacts');
+        },
 
-            index.search('Kevin', function(error, results) {
-                this.users = results.hits;
-            }.bind(this));
+        methods: {
+            search: function () {
+                this.index.search(this.query, function (error, results) {
+                    this.users = results.hits;
+                }.bind(this));
+            }
         }
     });
 </script>
