@@ -27,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(Search::class, function() {
+            $config = config('services.algolia');
+
             return new AlgoliaSearch(
-                new Client(env('ALGOLIA_APP_ID'), env("ALGOLIA_API_KEY"))
+                new Client($config['app_id'], $config['api_key'])
             );
         });
     }
